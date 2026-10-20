@@ -1,0 +1,135 @@
+:root {
+  --primario: #2968c8;
+  --fondo: #f5f5f5;
+  --panel: #ffffff;
+  --texto: #4a4a4a;
+  --titulo: #1a2b4c;
+  --borde: #dde2ea;
+  --oportunidad: #2e7d32;
+  --mercado: #5a6b7d;
+  --caro: #c62828;
+  --conf-alta: #2e7d32;
+  --conf-media: #b8860b;
+  --conf-baja: #8a8a8a;
+  --ancho-panel: 340px;
+  --alto-barra: 44px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); background: var(--fondo); overflow: hidden; }
+
+#mapa { position: absolute; inset: var(--alto-barra) 0 0 var(--ancho-panel); transition: left .25s ease; }
+body.sin-panel #mapa { left: 0; }
+
+/* ---------- panel de filtros ---------- */
+#panel {
+  position: absolute; z-index: 5; top: var(--alto-barra); bottom: 0; left: 0; width: var(--ancho-panel);
+  background: var(--panel); border-right: 1px solid var(--borde); display: flex; flex-direction: column;
+  transition: transform .25s ease;
+}
+body.sin-panel #panel { transform: translateX(-100%); }
+#panel header { padding: 14px 16px 10px; border-bottom: 1px solid var(--borde); }
+#panel h1 { margin: 0; font-size: 18px; color: var(--titulo); }
+#resumen { margin: 4px 0 0; font-weight: 600; color: var(--primario); }
+#filtros { flex: 1; overflow-y: auto; padding: 4px 16px 12px; }
+#filtros section { padding: 10px 0; border-bottom: 1px solid var(--borde); }
+#filtros h2 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--titulo); display: flex; justify-content: space-between; align-items: center; }
+.acciones button { border: 0; background: none; color: var(--primario); font-size: 12px; cursor: pointer; text-transform: none; letter-spacing: 0; padding: 0 0 0 8px; }
+#panel footer { padding: 10px 16px; border-top: 1px solid var(--borde); display: flex; flex-direction: column; gap: 6px; }
+#limpiar { padding: 8px; border: 1px solid var(--borde); background: var(--panel); border-radius: 6px; cursor: pointer; color: var(--titulo); font-weight: 600; }
+#limpiar:hover { background: var(--fondo); }
+#actualizado { color: #9a9a9a; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--borde); border-radius: 999px; cursor: pointer; user-select: none; background: var(--panel); }
+.chip input { display: none; }
+.chip:has(input:checked) { background: var(--primario); border-color: var(--primario); color: #fff; }
+.chip small { opacity: .7; }
+.chip.et-oportunidad:has(input:checked) { background: var(--oportunidad); border-color: var(--oportunidad); }
+.chip.et-precio_de_mercado:has(input:checked) { background: var(--mercado); border-color: var(--mercado); }
+.chip.et-caro:has(input:checked) { background: var(--caro); border-color: var(--caro); }
+
+.lista { max-height: 190px; overflow-y: auto; }
+.check { display: flex; align-items: center; gap: 8px; padding: 2px 0; cursor: pointer; }
+.check small { margin-left: auto; color: #9a9a9a; }
+
+/* rango doble: dos <input type=range> superpuestos */
+.rango .valores { display: flex; justify-content: space-between; font-weight: 600; color: var(--titulo); margin-bottom: 6px; }
+.rango .pista { position: relative; height: 22px; }
+.rango .pista::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--borde); }
+.rango .pista .tramo { position: absolute; top: 9px; height: 4px; background: var(--primario); border-radius: 2px; }
+.rango input[type=range] { position: absolute; left: 0; width: 100%; top: 0; margin: 0; height: 22px; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.rango input[type=range]::-webkit-slider-thumb { pointer-events: auto; -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--primario); cursor: pointer; }
+.rango input[type=range]::-moz-range-thumb { pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--primario); cursor: pointer; }
+.rango input[type=range]::-webkit-slider-runnable-track { background: none; }
+.rango input[type=range]::-moz-range-track { background: none; }
+
+/* ---------- botón de ocultar ---------- */
+#alternar {
+  position: absolute; z-index: 6; top: calc(var(--alto-barra) + 14px); left: calc(var(--ancho-panel) + 8px); width: 30px; height: 40px;
+  border: 1px solid var(--borde); border-radius: 6px; background: var(--panel); color: var(--titulo); font-size: 20px;
+  cursor: pointer; transition: left .25s ease; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+body.sin-panel #alternar { left: 8px; }
+
+/* ---------- leyenda y tarjeta ---------- */
+#leyenda {
+  position: absolute; z-index: 4; right: 10px; bottom: 28px; background: rgba(255,255,255,.94); border-radius: 8px;
+  padding: 6px 10px; display: flex; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.2); font-size: 12px;
+}
+#leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+#tarjeta {
+  position: absolute; z-index: 7; right: 12px; top: calc(var(--alto-barra) + 12px); width: 320px; max-height: calc(100% - var(--alto-barra) - 24px); overflow-y: auto;
+  background: var(--panel); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.28); padding: 14px;
+}
+#tarjeta[hidden] { display: none; }
+#cerrar { position: absolute; top: 6px; right: 8px; border: 0; background: none; font-size: 22px; cursor: pointer; color: #888; }
+.insignias { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; padding-right: 22px; }
+.insignia { color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 600; }
+.t-titulo { margin: 0; font-size: 15px; font-weight: 600; color: var(--titulo); }
+.t-ubic { margin: 2px 0 8px; font-size: 13px; }
+.t-datos { margin: 0 0 4px; }
+.t-precio { margin: 10px 0 0; font-size: 22px; font-weight: 700; color: var(--titulo); }
+.t-sub { margin: 0 0 6px; font-size: 12px; }
+.t-mercado { margin: 8px 0; padding: 8px; background: var(--fondo); border-radius: 6px; font-size: 13px; }
+.t-fecha { margin: 0; font-size: 12px; color: #9a9a9a; }
+.t-enlace { display: inline-block; margin-top: 8px; color: var(--primario); font-weight: 600; text-decoration: none; }
+.t-enlace:hover { text-decoration: underline; }
+
+/* ---------- barra de pestañas y vista "Cómo funciona" ---------- */
+#barra { position: absolute; z-index: 8; top: 0; left: 0; right: 0; height: var(--alto-barra); display: flex; align-items: stretch; gap: 4px;
+  padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--borde); }
+#barra .marca { align-self: center; font-weight: 700; color: var(--titulo); margin-right: 14px; }
+.pestana { border: 0; background: none; padding: 0 14px; cursor: pointer; font: inherit; color: var(--texto); border-bottom: 3px solid transparent; }
+.pestana:hover { color: var(--titulo); }
+.pestana.activa { color: var(--primario); font-weight: 600; border-bottom-color: var(--primario); }
+body.ver-explicacion #panel, body.ver-explicacion #alternar, body.ver-explicacion #mapa,
+body.ver-explicacion #leyenda, body.ver-explicacion #tarjeta { display: none; }
+
+#vista-explicacion { position: absolute; z-index: 4; inset: var(--alto-barra) 0 0 0; overflow-y: auto; background: var(--fondo); padding: 20px 16px 40px; }
+#vista-explicacion[hidden] { display: none; }
+#vista-explicacion .contenido { max-width: 820px; margin: 0 auto; }
+#vista-explicacion h1 { font-size: 24px; color: var(--titulo); margin: 4px 0 16px; }
+#vista-explicacion .bloque { background: var(--panel); border-radius: 10px; padding: 16px 20px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+#vista-explicacion h2 { font-size: 17px; color: var(--titulo); margin: 0 0 8px; }
+#vista-explicacion p, #vista-explicacion li { line-height: 1.55; }
+#vista-explicacion .aviso { border-left: 4px solid var(--caro); }
+#vista-explicacion table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+#vista-explicacion th, #vista-explicacion td { text-align: left; padding: 5px 10px 5px 0; vertical-align: top; border-bottom: 1px solid var(--borde); }
+#vista-explicacion th { color: var(--titulo); }
+#vista-explicacion th.num, #vista-explicacion td.num { text-align: right; white-space: nowrap; }
+.barra-imp { display: inline-block; height: 8px; background: var(--primario); border-radius: 4px; vertical-align: middle; }
+.bordes { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.8; }
+#vista-explicacion .insignia { margin-right: 6px; display: inline-block; }
+.pie { color: #9a9a9a; font-size: 12px; text-align: center; }
+
+/* ---------- celular: el panel pasa a cubrir el mapa ---------- */
+@media (max-width: 760px) {
+  :root { --ancho-panel: min(86vw, 340px); }
+  #mapa { left: 0; }
+  #alternar { left: calc(var(--ancho-panel) + 8px); }
+  #tarjeta { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 55%; }
+  #leyenda { bottom: auto; top: calc(var(--alto-barra) + 10px); right: 10px; flex-direction: column; gap: 3px; }
+}

@@ -1,0 +1,45 @@
+name: publicar
+
+# Regenera data/avisos.json desde Gold y publica el sitio en GitHub Pages. Corre 20 minutos después de cada scoring
+# (que va cada 3 horas) y a mano. Necesita el secret BD_STRING_VIS y Pages con la fuente "GitHub Actions".
+on:
+  schedule:
+    - cron: "20 */3 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Exportar avisos
+        env:
+          BD_STRING_VIS: ${{ secrets.BD_STRING_VIS }}
+        run: python scripts/exportar.py
+      - name: Armar el sitio
+        run: |
+          mkdir _sitio
+          cp -r index.html app.js styles.css data _sitio/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _sitio
+      - uses: actions/deploy-pages@v4

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arriendos Santiago</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%276%27 fill=%27%232968c8%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav id="barra">
+    <span class="marca">Arriendos Santiago</span>
+    <button type="button" class="pestana activa" data-vista="mapa">🗺️ Mapa</button>
+    <button type="button" class="pestana" data-vista="explicacion">ℹ️ Cómo funciona</button>
+  </nav>
+
+  <section id="vista-explicacion" hidden>
+    <div class="contenido">
+      <h1>Cómo funciona este mapa</h1>
+
+      <div class="bloque">
+        <h2>Qué es esto</h2>
+        <p>Este mapa usa un <b>modelo predictivo</b> (no una tasación ni un servicio profesional) entrenado con avisos de arriendo de
+        departamentos de 12 comunas centrales de Santiago, recolectados por un scraper propio desde Portal Inmobiliario. A partir de las
+        características de cada aviso (superficie, dormitorios, baños, ubicación, cercanía a servicios, antigüedad, texto del aviso, etc.),
+        el modelo estima cuál <b>debería</b> ser el costo total mensual (arriendo más gastos comunes), y lo compara con el costo total
+        real publicado para ver si el aviso está por debajo, en línea o por sobre lo esperado.</p>
+        <p>Solo se muestran los avisos <b>activos</b> y con datos completos y creíbles (los que el pipeline considera aptos). Los avisos
+        pausados, finalizados o con precios, superficies o ubicaciones sospechosas no aparecen.</p>
+      </div>
+
+      <div class="bloque">
+        <h2>Cantidad de datos usados</h2>
+        <p>El modelo vigente (versión <span data-m="version"></span>, <span data-m="algoritmo"></span>) se entrenó con
+        <b data-m="n_total"></b> avisos de departamentos en arriendo, divididos en:</p>
+        <ul>
+          <li><b data-m="n_train"></b> avisos para entrenar (los más recientes, de los últimos <span data-m="ventana_dias"></span> días).</li>
+          <li><b data-m="n_val"></b> avisos para validar y elegir los parámetros.</li>
+          <li><b data-m="n_test"></b> avisos que el modelo nunca vio, usados solo para medir qué tan bien predice.</li>
+        </ul>
+        <p>Es un conjunto acotado a un momento puntual: no es un catastro exhaustivo del mercado. El modelo se reentrena cada día
+        con los datos nuevos, y solo reemplaza al vigente si lo mejora de forma significativa.</p>
+      </div>
+
+      <div class="bloque">
+        <h2>Qué variables pesan más</h2>
+        <p>El modelo combina <b data-m="n_variables"></b> variables de cada aviso: características físicas (superficies, baños,
+        estacionamientos, amoblado, antigüedad), ubicación y mercado local (distancias a centros de servicios, precios de comparables
+        cercanos, comuna y barrio, cercanía a colegios, farmacias y universidades), contexto socioeconómico del sector (índice IGVUST de
+        la unidad vecinal) y señales del texto del aviso. Ninguna variable decide sola: la estimación sale de la combinación. Las diez que
+        más influyen, como porcentaje de la importancia total del modelo:</p>
+        <table id="tabla-importancia"></table>
+      </div>
+
+      <div class="bloque">
+        <h2>Qué tan preciso es</h2>
+        <p>Medido sobre los <span data-m="n_test"></span> avisos de test, comparando el costo total predicho con el real:</p>
+        <table class="datos">
+          <tr><th>Métrica</th><th>Valor</th><th>Qué significa</th></tr>
+          <tr><td>Error promedio (MAE)</td><td><b data-m="mae"></b></td><td>En promedio, la predicción se equivoca por ese monto respecto al costo total real.</td></tr>
+          <tr><td>Error porcentual (MAPE)</td><td><b data-m="mape"></b></td><td>En promedio, la predicción se desvía ese porcentaje del costo total real.</td></tr>
+          <tr><td>Error porcentual mediano</td><td><b data-m="mdape"></b></td><td>La mitad de los avisos tiene un error menor que esto.</td></tr>
+          <tr><td>Dentro de ±10 %</td><td><b data-m="dentro_10"></b></td><td>Proporción de avisos cuya predicción cae a menos de 10 % del costo real.</td></tr>
+          <tr><td>R²</td><td><b data-m="r2"></b></td><td>El modelo explica ese porcentaje de la variación del costo total entre avisos.</td></tr>
+        </table>
+        <p>El error <b>no es parejo en todo el rango</b>: en el quintil más caro de avisos el error promedio sube a
+        <b data-m="mae_caro"></b>, porque hay menos avisos para aprender y los precios son más variables. Por eso cada aviso se compara
+        con el error típico de avisos de costo parecido, y no con un error único (ver los estratos más abajo).</p>
+        <p>Para saber si es bueno, se compara con dos formas ingenuas de estimar el costo sin ningún modelo:</p>
+        <table class="datos">
+          <tr><th>Cómo se estima el costo total</th><th>Error promedio (MAE)</th></tr>
+          <tr><td>Siempre el costo total promedio del mercado, sin distinguir entre avisos</td><td data-m="b_media"></td></tr>
+          <tr><td>Costo por m² del sector × superficie del departamento, sin ajustar nada más</td><td data-m="b_m2"></td></tr>
+          <tr><td><b>Este modelo</b></td><td><b data-m="mae"></b></td></tr>
+        </table>
+      </div>
+
+      <div class="bloque">
+        <h2>Los estratos (deciles de costo total)</h2>
+        <p>Para decidir cuándo un costo es "raro", los avisos de referencia se agrupan en <b>10 estratos según su costo total mensual</b>
+        (deciles), y para cada uno se calcula su propio error típico (la mediana del error y su MAD, una medida de dispersión poco sensible
+        a valores extremos). Los bordes de costo total de los estratos del modelo vigente son:</p>
+        <p class="bordes" id="bordes"></p>
+        <p>Cada aviso se compara solo contra el error típico de su propio estrato, no contra un promedio general del mercado.</p>
+      </div>
+
+      <div class="bloque">
+        <h2>Cuándo es "Oportunidad", "Precio de mercado" o "Caro"</h2>
+        <p>Para cada aviso se calcula un <b>z-score robusto</b>: qué tan lejos está su error (costo total real menos costo total predicho) de la
+        mediana de error de su estrato, medido en unidades de MAD de ese estrato. Con eso:</p>
+        <ul>
+          <li><span class="insignia" style="background:#2e7d32">Oportunidad</span> el costo real está bastante más bajo de lo esperado para avisos similares (z menor a −1).</li>
+          <li><span class="insignia" style="background:#c62828">Caro</span> el costo real está bastante más alto de lo esperado (z mayor a 1).</li>
+          <li><span class="insignia" style="background:#5a6b7d">Precio de mercado</span> el costo real está dentro de lo esperado.</li>
+        </ul>
+        <p id="reparto"></p>
+        <p>La tarjeta de cada aviso muestra además el <b>rango de precio de mercado</b>: el costo total que habría quedado como "precio de
+        mercado" según su estrato. El mapa no muestra el número del z-score, para no dar una falsa sensación de precisión.</p>
+      </div>
+
+      <div class="bloque">
+        <h2>Qué significa el nivel de confianza</h2>
+        <p>El modelo es un <b>ensamble de <span data-m="n_modelos"></span> modelos</b> entrenados con distintas semillas aleatorias sobre los
+        mismos datos. La confianza mide <b>qué tan de acuerdo están entre sí</b> para un aviso en particular:</p>
+        <ul>
+          <li><span class="insignia" style="background:#2e7d32">Confianza alta</span> los modelos predicen costos muy parecidos.</li>
+          <li><span class="insignia" style="background:#b8860b">Confianza media</span> hay algo de desacuerdo.</li>
+          <li><span class="insignia" style="background:#8a8a8a">Confianza baja</span> los modelos discrepan bastante: el aviso tiene una combinación
+          de características poco común en los datos de entrenamiento, así que su predicción es menos confiable.</li>
+        </ul>
+        <p>Confianza alta <b>no garantiza que la predicción sea correcta</b>: solo dice que el modelo es consistente consigo mismo.</p>
+      </div>
+
+      <div class="bloque aviso">
+        <h2>⚠️ Usar con precaución</h2>
+        <p>Este mapa se hizo <b>a modo de prueba y aprendizaje</b>. No es un servicio de tasación ni una recomendación de inversión. Antes de
+        decidir algo con esta información, ten en cuenta:</p>
+        <ul>
+          <li>El modelo <b>no considera todo</b> lo que afecta el costo real de un arriendo: estado interno, luminosidad, ruido, terminaciones,
+          vista, estado del edificio, condiciones del contrato, urgencia del arrendador y otras cosas que no están en los datos.</li>
+          <li>Los datos vienen de avisos publicados: pueden tener errores de tipeo, precios o gastos comunes desactualizados, o información incompleta.</li>
+          <li>El error típico del modelo significa que <b>puede fallar</b>, incluso en avisos con confianza alta.</li>
+          <li>Revisa siempre la publicación original antes de sacar conclusiones sobre un aviso.</li>
+        </ul>
+      </div>
+      <p class="pie" id="pie-modelo"></p>
+    </div>
+  </section>
+
+  <aside id="panel" aria-label="Filtros">
+    <header>
+      <h1>Arriendos en Santiago</h1>
+      <p id="resumen">Cargando…</p>
+    </header>
+    <div id="filtros">
+      <section>
+        <h2>Costo total mensual</h2>
+        <div class="rango" id="r-costo"></div>
+      </section>
+      <section>
+        <h2>Superficie útil (m²)</h2>
+        <div class="rango" id="r-sup"></div>
+      </section>
+      <section><h2>Dormitorios</h2><div class="chips" id="f-dorm"></div></section>
+      <section><h2>Baños</h2><div class="chips" id="f-banos"></div></section>
+      <section>
+        <h2>Comuna <span class="acciones"><button type="button" data-todas="comuna">todas</button><button type="button" data-ninguna="comuna">ninguna</button></span></h2>
+        <div class="lista" id="f-comuna"></div>
+      </section>
+      <section><h2>Etiqueta del modelo</h2><div class="chips" id="f-etiqueta"></div></section>
+      <section><h2>Nivel de confianza</h2><div class="chips" id="f-confianza"></div></section>
+      <section>
+        <h2>Más filtros</h2>
+        <label class="check"><input type="checkbox" id="f-amoblado"> Amoblado</label>
+        <label class="check"><input type="checkbox" id="f-estac"> Con estacionamiento</label>
+      </section>
+    </div>
+    <footer>
+      <button type="button" id="limpiar">Limpiar filtros</button>
+      <small id="actualizado"></small>
+    </footer>
+  </aside>
+
+  <button id="alternar" type="button" aria-label="Ocultar filtros" aria-expanded="true" title="Mostrar u ocultar filtros">‹</button>
+  <main id="mapa"></main>
+
+  <div id="leyenda">
+    <span><i style="background:var(--oportunidad)"></i>Oportunidad</span>
+    <span><i style="background:var(--mercado)"></i>Precio de mercado</span>
+    <span><i style="background:var(--caro)"></i>Caro</span>
+  </div>
+  <div id="tarjeta" hidden>
+    <button id="cerrar" type="button" aria-label="Cerrar">×</button>
+    <div id="tarjeta-contenido"></div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

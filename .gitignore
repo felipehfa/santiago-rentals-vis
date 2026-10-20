@@ -1,0 +1,4 @@
+.env
+.env.*
+data/avisos.json
+__pycache__/
