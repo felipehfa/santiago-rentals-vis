@@ -318,8 +318,14 @@ async function cargarExplicacion() {
   }
 }
 
+// Eventos para el contador de visitas (GoatCounter); si no cargó o está bloqueado, no pasa nada.
+function evento(nombre) {
+  try { window.goatcounter?.count({ path: nombre, title: nombre, event: true }); } catch { /* sin contador */ }
+}
+
 function mostrarVista(vista) {
   const explicacion = vista === "explicacion";
+  evento("pestana-" + vista);
   document.body.classList.toggle("ver-explicacion", explicacion);
   $("vista-explicacion").hidden = !explicacion;
   document.querySelectorAll(".pestana").forEach((b) => b.classList.toggle("activa", b.dataset.vista === vista));
@@ -335,6 +341,7 @@ async function iniciar() {
   cargarExplicacion();
   if (location.hash === "#como-funciona") mostrarVista("explicacion");
   $("cerrar").addEventListener("click", cerrarTarjeta);
+  $("tarjeta").addEventListener("click", (e) => { if (e.target.closest(".t-enlace")) evento("clic-publicacion-original"); });
   if (matchMedia("(max-width: 760px)").matches) document.body.classList.add("sin-panel");
   try {
     const r = await fetch("data/avisos.json", { cache: "no-cache" });

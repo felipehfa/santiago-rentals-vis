@@ -59,6 +59,12 @@ Requisitos, una sola vez:
 
 El sitio publicado es **público**, igual que el repo: cualquiera ve los avisos exportados (ubicación, precio, etiqueta y enlace).
 
+## Contador de visitas
+
+La página cuenta visitas con [GoatCounter](https://www.goatcounter.com) (sin cookies ni datos personales; el panel está en
+`https://santiago-rentals.goatcounter.com`). Además de las visitas, registra tres eventos: `pestana-mapa`, `pestana-explicacion`
+y `clic-publicacion-original`. En local (`localhost`) no cuenta. La pestaña "Cómo funciona" lo avisa al pie.
+
 ## Pendiente
 
 - Automatizar `data/modelo.json` (hoy es manual tras cada promoción): por ejemplo que el entrenamiento del repo ML lo publique al promover.
