@@ -21,7 +21,7 @@ await construir({
     { key: "pestana", shape: "rect", label: "Pestaña Cómo funciona", color: "Éxito", x: 1230, y: 380, w: 290, h: 90 },
     { key: "goat", shape: "rect", label: "GoatCounter", color: "Externo", x: 1230, y: 20, w: 270, h: 90 },
     nota("n_fuentes", 10, 450, 330, 90, "Solo avisos activos y\naptos para entrenar"),
-    nota("n_exportar", 430, 470, 340, 110, "GitHub Actions, cada 30 min;\ncosto total hasta 10 millones;\ncoordenadas a ~100 m"),
+    nota("n_exportar", 430, 470, 340, 110, "GitHub Actions, cada 30 min;\ncosto total hasta 10 millones"),
     nota("n_goat", 850, 20, 330, 90, "Visitas y clics, sin\ncookies ni datos personales"),
     nota("n_mapa", 1190, 280, 350, 70, "Filtros en el navegador;\nclic: tarjeta y enlace"),
     nota("n_modelo", 850, 490, 330, 90, "El scoring escribe la fila\nal promover un modelo"),

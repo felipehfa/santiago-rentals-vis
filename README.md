@@ -39,9 +39,10 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
   y estacionamiento. El contador de arriba dice cuántos avisos pasan los filtros.
 - Los controles de costo y superficie llegan hasta el percentil 99; al dejarlos al tope no hay límite superior.
 - **Pestaña "Cómo funciona"** (como la de Concepción, con las cifras de este modelo): qué es, datos usados, variables que más pesan,
-  precisión frente a dos estimaciones ingenuas, estratos de costo, cuándo es oportunidad o caro, qué es la confianza y advertencias.
+  precisión frente a tres estimaciones simples (promedio, mediana por comuna y dormitorios, costo por m² de la comuna), estratos de costo, cuándo es oportunidad o caro, qué es la confianza y advertencias.
   Las cifras salen de `data/modelo.json`, no están escritas a mano en la página.
-- **Privacidad y uso:** las coordenadas se redondean a 3 decimales (~100 m) y no se exporta la descripción, fotos ni contacto de
+- **Privacidad y uso:** las coordenadas son las del aviso público (departamentos en edificios; se probó redondearlas a ~100 m y se
+  descartó: apilaba 55 avisos en un punto) y no se exporta la descripción, fotos ni contacto de
   quien publica. La página sí es indexable por los buscadores (se decidió no usar `noindex`) y avisa que no tiene afiliación con Portal
   Inmobiliario. Quien publique un aviso puede pedir que se retire, por GitHub o LinkedIn (ver la pestaña "Cómo funciona").
 

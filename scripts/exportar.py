@@ -1,8 +1,8 @@
 """Exporta a data/ lo que muestra el mapa: los avisos activos con su predicción vigente y las cifras del modelo.
 
 - data/avisos.json: avisos activos y **aptos** (sin ningún motivo de exclusión en Gold) con etiqueta de mercado. Solo salen los
-  campos que usa la vista; nunca la descripción. Las coordenadas se redondean a 3 decimales (~100 m): el mapa muestra la
-  zona de un aviso, no su dirección exacta.
+  campos que usa la vista; nunca la descripción. Las coordenadas van con 5 decimales (~1 m), tal como las entrega el portal:
+  son departamentos en edificios, no casas, y la ubicación del edificio ya es pública en el aviso.
 - data/modelo.json: las cifras del modelo vigente (versión más reciente de gold.modelo_vigente), para la pestaña "Cómo funciona".
   Si la tabla aún no existe o está vacía, no se escribe y la pestaña avisa que no hay cifras.
 
@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 
 RAIZ = Path(__file__).resolve().parents[1]
 CARPETA = RAIZ / "data"
-DECIMALES_COORDENADAS = 3   # ~110 m
+DECIMALES_COORDENADAS = 5   # ~1 m; solo se recortan los dígitos de más
 # El mismo tope del entrenamiento (santiago-rentals-ml/config.yaml); sobre eso son errores de precio.
 COSTO_TOTAL_MAX_CLP = 10_000_000
 

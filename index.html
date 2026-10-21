@@ -67,11 +67,12 @@
         <p>El error <b>no es parejo en todo el rango</b>: en el quintil más caro de avisos el error promedio sube a
         <b data-m="mae_caro"></b>, porque hay menos avisos para aprender y los precios son más variables. Por eso cada aviso se compara
         con el error típico de avisos de costo parecido, y no con un error único (ver los estratos más abajo).</p>
-        <p>Para saber si es bueno, se compara con dos formas ingenuas de estimar el costo sin ningún modelo:</p>
+        <p>Para saber si es bueno, se compara con formas simples de estimar el costo sin ningún modelo:</p>
         <table class="datos">
           <tr><th>Cómo se estima el costo total</th><th>Error promedio (MAE)</th></tr>
           <tr><td>Siempre el costo total promedio del mercado, sin distinguir entre avisos</td><td data-m="b_media"></td></tr>
-          <tr><td>Costo por m² del sector × superficie del departamento, sin ajustar nada más</td><td data-m="b_m2"></td></tr>
+          <tr><td>Mediana del costo total de su comuna y su número de dormitorios</td><td data-m="b_dorm"></td></tr>
+          <tr><td>Costo por m² de la comuna × superficie del departamento, sin ajustar nada más</td><td data-m="b_m2"></td></tr>
           <tr><td><b>Este modelo</b></td><td><b data-m="mae"></b></td></tr>
         </table>
       </div>
@@ -127,9 +128,8 @@
       <div class="bloque">
         <h2>Los datos y el contacto</h2>
         <p>Los avisos son públicos en Portal Inmobiliario; este mapa <b>no tiene afiliación ni respaldo</b> de ese sitio ni de
-        Mercado Libre. Es un proyecto personal, sin fines comerciales ni publicidad. Para que cada aviso no se pueda ubicar con
-        precisión, las coordenadas se redondean a unos 100 metros, y no se muestran descripciones, fotos ni datos de contacto de
-        quien publica: la tarjeta lleva al aviso original, que es la fuente de verdad. El precio y el estado pueden haber cambiado
+        Mercado Libre. Es un proyecto personal, sin fines comerciales ni publicidad. Cada punto es la ubicación que da el aviso
+        público, que es la de un edificio; no se muestran descripciones, fotos ni datos de contacto de quien publica: la tarjeta lleva al aviso original, que es la fuente de verdad. El precio y el estado pueden haber cambiado
         desde la última vez que se revisó el aviso (la tarjeta dice cuándo fue).</p>
         <p>Si publicas un aviso y prefieres que no aparezca aquí, o encuentras un error, escríbeme y lo retiro:
         <a href="https://github.com/felipehfa" target="_blank" rel="noopener noreferrer">GitHub</a> ·

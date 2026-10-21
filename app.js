@@ -281,7 +281,8 @@ function llenarExplicacion(m) {
     ventana_dias: m.ventana_dias ?? "—",
     mae: clp(m.metricas.mae), mape: fmtPct(m.metricas.mape), mdape: fmtPct(m.metricas.mdape),
     dentro_10: fmtPct(m.metricas.dentro_10), r2: fmtPct(m.metricas.r2 * 100), mae_caro: clp(m.metricas.mae_quintil_caro),
-    b_media: clp(base.baseline_media_train_mae), b_m2: clp(base.baseline_mercado_m2_sector_mae),
+    b_media: clp(base.baseline_media_train_mae), b_dorm: clp(base.baseline_mediana_comuna_dormitorios_mae),
+    b_m2: clp(base.baseline_m2_comuna_mae ?? base.baseline_mercado_m2_sector_mae),
   };
   document.querySelectorAll("[data-m]").forEach((el) => { if (el.dataset.m in valores) el.textContent = valores[el.dataset.m]; });
 
