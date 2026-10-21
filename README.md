@@ -55,7 +55,7 @@ python -m http.server 8765        # abrir http://localhost:8765
 Requisitos, una sola vez:
 
 1. En Settings > Pages, fuente **GitHub Actions**.
-2. Secret `BD_STRING_VIS` con un rol de solo lectura sobre `gold.predicciones_vigentes`, `gold.aviso_entrenamiento` y `silver.avisos`.
+2. Secret `BD_STRING_VIS` con un rol de solo lectura sobre `gold.predicciones_vigentes`, `gold.aviso_entrenamiento` y, de `silver.avisos`, solo las columnas `id_aviso` y `url`.
 
 El sitio publicado es **público**, igual que el repo: cualquiera ve los avisos exportados (ubicación, precio, etiqueta y enlace).
 

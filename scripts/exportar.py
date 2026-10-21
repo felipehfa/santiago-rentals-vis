@@ -22,7 +22,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 SALIDA = RAIZ / "data" / "avisos.json"
 
 SQL = """
-SELECT g.id_aviso, s.url, s.titulo, g.comuna, g.barrio,
+SELECT g.id_aviso, s.url, g.titulo, g.comuna, g.barrio,
        g.latitud, g.longitud, g.dormitorios, g.banos, g.superficie_util_m2, g.superficie_total_m2,
        g.estacionamientos, g.amoblado, g.precio_clp, g.gastos_comunes, g.fecha_publicacion_aprox, g.ultima_vez_visto,
        p.costo_total_publicado_clp, p.costo_total_predicho_clp, p.banda_inferior_clp, p.banda_superior_clp,
