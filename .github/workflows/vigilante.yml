@@ -1,0 +1,26 @@
+name: vigilante
+
+# Revisa cada hora que Gold se siga reconstruyendo y que el scoring esté al día. Si algo se atrasa, la ejecución queda en
+# rojo y GitHub avisa por correo (Settings > Notifications > Actions). Solo lee Gold con el rol del mapa.
+on:
+  schedule:
+    - cron: "50 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vigilar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Revisar el pipeline
+        env:
+          BD_STRING_VIS: ${{ secrets.BD_STRING_VIS }}
+        run: python scripts/vigilar.py

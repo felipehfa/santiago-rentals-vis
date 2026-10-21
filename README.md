@@ -55,6 +55,22 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
   [OpenFreeMap](https://openfreemap.org) (datos de OpenStreetMap; gratis, sin clave, la atribución viene en el estilo),
   filtra en el navegador y arma la tarjeta.
 - `data/avisos.json` y `data/modelo.json` **no están en git**: se generan en cada publicación.
+- `scripts/vigilar.py` es el vigilante (ver "Alertas"). `tests/` tiene las pruebas.
+
+## Pruebas y CI
+
+`python -m pytest -q` (14 pruebas) revisa sin base de datos ni navegador: el exportador (campos, coordenadas, que la consulta solo
+traiga avisos activos y aptos con enlace `https://` y nunca la descripción ni datos de contacto), los contratos entre `app.js`,
+`index.html` y el scoring (valores de etiqueta y de estabilidad, ids del DOM, cifras de la pestaña "Cómo funciona") y las reglas
+del vigilante. El workflow `ci` corre además `node --check app.js` y ruff en cada push.
+
+## Alertas
+
+El workflow `vigilante` corre cada hora en GitHub (aunque el notebook del ELT esté apagado) y deja la ejecución en rojo, con
+correo de GitHub, si Gold lleva más de 3 horas sin reconstruirse (orquestador caído o notebook apagado) o si más del 5 % de las
+predicciones quedó atrasado respecto de las visitas (scoring caído). Para no mandar un correo por hora, solo avisa al cruzar 3, 12
+y 24 horas de atraso y luego cada día. Para recibirlos hay que tener activadas las notificaciones de Actions en
+Settings > Notifications del perfil de GitHub. Usa el mismo secret `BD_STRING_VIS`.
 
 ## Ejecutar en local
 

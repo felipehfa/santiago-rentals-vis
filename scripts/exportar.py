@@ -17,7 +17,7 @@ Uso:
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import psycopg2
@@ -98,7 +98,7 @@ def main() -> int:
         print(f"No se pudo leer la base ({type(e).__name__})")  # el texto de la excepción puede traer la cadena
         return 1
 
-    ahora = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    ahora = datetime.now(UTC).isoformat(timespec="seconds")
     escribir(carpeta / "avisos.json", {"generado": ahora, "avisos": filas})
     tam = (carpeta / "avisos.json").stat().st_size / 1e6
     print(f"{len(filas)} avisos -> {carpeta / 'avisos.json'} ({tam:.1f} MB)")
