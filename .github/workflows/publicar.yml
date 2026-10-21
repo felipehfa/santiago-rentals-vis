@@ -1,10 +1,10 @@
 name: publicar
 
-# Regenera data/avisos.json desde Gold y publica el sitio en GitHub Pages. Corre 20 minutos después de cada scoring
-# (que va cada 3 horas) y a mano. Necesita el secret BD_STRING_VIS y Pages con la fuente "GitHub Actions".
+# Regenera data/avisos.json desde Gold y publica el sitio en GitHub Pages. Corre cada 30 minutos (10 minutos después de cada
+# scoring) y a mano. Necesita el secret BD_STRING_VIS y Pages con la fuente "GitHub Actions".
 on:
   schedule:
-    - cron: "20 */3 * * *"
+    - cron: "17,47 * * * *"
   push:
     branches: [main]
   workflow_dispatch:

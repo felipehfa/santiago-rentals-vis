@@ -2,3 +2,4 @@
 .env.*
 data/avisos.json
 __pycache__/
+data/modelo.json

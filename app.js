@@ -25,17 +25,8 @@ const BUCKETS = ["0", "1", "2", "3", "4+"];
 const NOMBRE_BUCKET = { "0": "Sin especificar", "1": "1", "2": "2", "3": "3", "4+": "4+" };
 const NOMBRE_BUCKET_DORM = { ...NOMBRE_BUCKET, "0": "Estudio (0)" };
 
-// Fondo gris claro de Esri en dos capas (base y nombres). Esri usa {z}/{y}/{x}, no {z}/{x}/{y}.
-const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas";
-const ESTILO = {
-  version: 8,
-  sources: {
-    base: { type: "raster", tileSize: 256, maxzoom: 16, tiles: [`${ESRI}/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}`],
-      attribution: "Esri, HERE, Garmin, © OpenStreetMap contributors" },
-    nombres: { type: "raster", tileSize: 256, maxzoom: 16, tiles: [`${ESRI}/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}`] },
-  },
-  layers: [{ id: "base", type: "raster", source: "base" }, { id: "nombres", type: "raster", source: "nombres" }],
-};
+// Fondo claro de OpenFreeMap (datos de OpenStreetMap): gratis, sin clave y de uso libre. La atribución viene en el estilo.
+const ESTILO = "https://tiles.openfreemap.org/styles/positron";
 
 const $ = (id) => document.getElementById(id);
 const clp = (n) => (n == null ? "—" : "$" + Math.round(n).toLocaleString("es-CL"));
@@ -316,7 +307,7 @@ async function cargarExplicacion() {
     if (!r.ok) throw new Error(r.status);
     llenarExplicacion(await r.json());
   } catch {
-    $("pie-modelo").textContent = "No se pudieron cargar las cifras del modelo.";
+    $("pie-modelo").textContent = "Las cifras del modelo aún no están disponibles (se publican al promover un modelo).";
   }
 }
 
@@ -340,6 +331,7 @@ function mostrarVista(vista) {
 async function iniciar() {
   $("alternar").addEventListener("click", () => alternarPanel());
   document.querySelectorAll(".pestana").forEach((b) => b.addEventListener("click", () => mostrarVista(b.dataset.vista)));
+  $("ir-explicacion").addEventListener("click", (e) => { e.preventDefault(); mostrarVista("explicacion"); });
   cargarExplicacion();
   if (location.hash === "#como-funciona") mostrarVista("explicacion");
   $("cerrar").addEventListener("click", cerrarTarjeta);
@@ -350,6 +342,10 @@ async function iniciar() {
     if (!r.ok) throw new Error(r.status);
     const doc = await r.json();
     AVISOS = doc.avisos;
+    if (!AVISOS.length) {   // por ejemplo mientras se entrena un modelo nuevo y aún no hay predicciones
+      $("resumen").textContent = "Aún no hay avisos con predicción; vuelve en un rato";
+      return;
+    }
     AVISOS.forEach((a, i) => { a.i = i; });
     $("actualizado").textContent = "Actualizado " + new Date(doc.generado).toLocaleString("es-CL", { dateStyle: "short", timeStyle: "short" });
   } catch {

@@ -40,6 +40,8 @@ body.sin-panel #panel { transform: translateX(-100%); }
 #limpiar { padding: 8px; border: 1px solid var(--borde); background: var(--panel); border-radius: 6px; cursor: pointer; color: var(--titulo); font-weight: 600; }
 #limpiar:hover { background: var(--fondo); }
 #actualizado { color: #9a9a9a; }
+.legal { color: #9a9a9a; font-size: 11px; line-height: 1.35; }
+.legal a { color: var(--primario); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--borde); border-radius: 999px; cursor: pointer; user-select: none; background: var(--panel); }

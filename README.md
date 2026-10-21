@@ -17,12 +17,13 @@ que lo genera está en `docs/diagramas/herramientas/` (ver su `LEEME.md`).
 Cómo llega un aviso al mapa, en dos recorridos:
 
 - **Arriba, los avisos.** `scripts/exportar.py` lee tres tablas de la base: la predicción vigente de cada aviso
-  (`gold.predicciones_vigentes`), sus datos (`gold.aviso_entrenamiento`) y el enlace a la publicación (la columna `url` de
-  `silver.avisos`). Solo deja los avisos activos y aptos, con costo total de hasta 10 millones, y escribe `data/avisos.json`.
-  GitHub Actions lo hace cada 3 horas y publica el sitio. El navegador carga ese archivo, filtra y dibuja el mapa. Cada visita y cada
+  (`gold.predicciones_vigentes`) y sus datos y enlace a la publicación (`gold.aviso_entrenamiento`, que trae la `url`). Solo
+  deja los avisos activos y aptos, con costo total de hasta 10 millones, y escribe `data/avisos.json`. GitHub Actions lo hace
+  cada 30 minutos y publica el sitio. El navegador carga ese archivo, filtra y dibuja el mapa. Cada visita y cada
   clic en un enlace se cuentan en GoatCounter, sin cookies ni datos personales.
-- **Abajo, el modelo.** `scripts/exportar_modelo.py` lee las cifras del `@champion` en MLflow y escribe `data/modelo.json`, que
-  alimenta la pestaña "Cómo funciona". Se corre a mano después de promover un modelo nuevo.
+- **Abajo, el modelo.** El scoring del repo ML publica en `gold.modelo_vigente` las cifras del `@champion` cada vez que hay
+  una versión nueva; el mismo `scripts/exportar.py` las escribe en `data/modelo.json`, que alimenta la pestaña "Cómo funciona".
+  No hace falta correr nada a mano.
 
 Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa* y *Las cifras del modelo llegan a la pestaña*.
 
@@ -40,19 +41,19 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
 - **Pestaña "Cómo funciona"** (como la de Concepción, con las cifras de este modelo): qué es, datos usados, variables que más pesan,
   precisión frente a dos estimaciones ingenuas, estratos de costo, cuándo es oportunidad o caro, qué es la confianza y advertencias.
   Las cifras salen de `data/modelo.json`, no están escritas a mano en la página.
+- **Privacidad y uso:** las coordenadas se redondean a 3 decimales (~100 m) y no se exporta la descripción, fotos ni contacto de
+  quien publica. La página sí es indexable por los buscadores (se decidió no usar `noindex`) y avisa que no tiene afiliación con Portal
+  Inmobiliario. Quien publique un aviso puede pedir que se retire, por GitHub o LinkedIn (ver la pestaña "Cómo funciona").
 
 ## Piezas
 
-- `scripts/exportar.py` lee las tres tablas y escribe `data/avisos.json` con los campos que usa el mapa. Solo exporta avisos
-  con `apto_entrenamiento` (los mismos que usa el entrenamiento) y, por si acaso, con costo total de hasta 10 millones (el tope
-  del entrenamiento).
-- `app.js` dibuja el mapa con [MapLibre GL JS](https://maplibre.org) sobre el fondo gris claro de Esri (los tiles usan el orden
-  `{z}/{y}/{x}`), filtra en el navegador y arma la tarjeta.
-- `data/avisos.json` **no está en git**: se genera en cada publicación.
-- `scripts/exportar_modelo.py` lee el `@champion` de MLflow (métricas, tamaños de los conjuntos, baselines, importancia de
-  variables, deciles de costo y reparto de etiquetas) y escribe `data/modelo.json`, que **sí está en git**. Se corre a mano
-  después de que un modelo nuevo sea promovido (usa las variables de MLflow del `.env.nube` del repo del modelo) y se sube el
-  archivo; mientras no cambie el champion, no hace falta.
+- `scripts/exportar.py` lee tres tablas de Gold y escribe `data/avisos.json` (los campos que usa el mapa) y `data/modelo.json`
+  (las cifras del modelo vigente, de `gold.modelo_vigente`). Solo exporta avisos con `apto_entrenamiento` (los mismos que usa el
+  entrenamiento) y, por si acaso, con costo total de hasta 10 millones (el tope del entrenamiento).
+- `app.js` dibuja el mapa con [MapLibre GL JS](https://maplibre.org) sobre el fondo claro de
+  [OpenFreeMap](https://openfreemap.org) (datos de OpenStreetMap; gratis, sin clave, la atribución viene en el estilo),
+  filtra en el navegador y arma la tarjeta.
+- `data/avisos.json` y `data/modelo.json` **no están en git**: se generan en cada publicación.
 
 ## Ejecutar en local
 
@@ -65,13 +66,16 @@ python -m http.server 8765        # abrir http://localhost:8765
 
 ## Publicación (GitHub Pages)
 
-`.github/workflows/publicar.yml` regenera el JSON y publica el sitio cada 3 horas (20 minutos después del scoring) y a mano.
-Requisitos, una sola vez:
+`.github/workflows/publicar.yml` regenera los JSON y publica el sitio cada 30 minutos (10 minutos después de cada scoring) y a
+mano. Entre Silver y Gold (cada hora en el ELT), el scoring (cada 30 minutos) y esta publicación, un aviso nuevo tarda
+unas 2 horas como máximo en llegar al mapa. Requisitos, una sola vez:
 
 1. En Settings > Pages, fuente **GitHub Actions**.
-2. Secret `BD_STRING_VIS` con un rol de solo lectura sobre `gold.predicciones_vigentes`, `gold.aviso_entrenamiento` y, de `silver.avisos`, solo las columnas `id_aviso` y `url`.
+2. Secret `BD_STRING_VIS` con un rol de solo lectura (`vis_lectura`) sobre `gold.predicciones_vigentes`,
+   `gold.aviso_entrenamiento` y `gold.modelo_vigente`. El último permiso lo da solo la reconstrucción de Gold.
 
-El sitio publicado es **público**, igual que el repo: cualquiera ve los avisos exportados (ubicación, precio, etiqueta y enlace).
+El sitio publicado es **público**, igual que este repo: cualquiera ve los avisos exportados (ubicación aproximada, precio,
+etiqueta y enlace). El repo del ELT, que hace el scraping, es privado.
 
 ## Contador de visitas
 
@@ -81,7 +85,4 @@ y `clic-publicacion-original`. En local (`localhost`) no cuenta. La pestaña "C�
 
 ## Pendiente
 
-- Automatizar `data/modelo.json` (hoy es manual tras cada promoción): por ejemplo que el entrenamiento del repo ML lo publique al promover.
-- Crear el rol de lectura para la publicación y cargar el secret (hoy el JSON se genera con una cuenta local).
-- Excluir del scoring los avisos con precio sospechoso (`scoring.motivos_predecibles` en el repo ML): hoy reciben una etiqueta sin sentido, aunque ya no llegan al mapa.
 - Agrupar puntos (clusters) si el mapa se satura al alejar el zoom.
