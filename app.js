@@ -6,7 +6,8 @@
 const ETIQUETAS = {
   oportunidad: { texto: "Oportunidad", color: "#2e7d32" },
   precio_de_mercado: { texto: "Precio de mercado", color: "#5a6b7d" },
-  caro: { texto: "Caro", color: "#c62828" },
+  // La clave interna sigue siendo "caro" (así la guarda el scoring); lo que se muestra es descriptivo y medible.
+  caro: { texto: "Sobre el rango de mercado", color: "#c62828" },
 };
 // Los valores deben coincidir exactos con los que guarda el scoring (la baja confianza no sigue el orden de las otras dos).
 const CONFIANZAS = {
@@ -35,6 +36,7 @@ const bucket = (n) => (n == null || n <= 0 ? "0" : n >= 4 ? "4+" : String(n));
 const costo = (a) => a.ct ?? (a.p != null ? a.p + (a.gc ?? 0) : null);
 
 let AVISOS = [];
+let MAE_MODELO = null;   // error promedio del modelo vigente (de data/modelo.json), para mostrarlo en cada tarjeta
 let mapa;
 let seleccionado = null;
 const filtros = {};
@@ -193,6 +195,8 @@ function tarjeta(a) {
   const pub = hace(a.pub), vis = hace(a.vis);
   const mercado = a.bi != null && a.bs != null
     ? `<div class="t-mercado">Rango de precio de mercado estimado<br><b>${clp(a.bi)} – ${clp(a.bs)}</b> al mes</div>` : "";
+  const error = MAE_MODELO ? `se equivoca en promedio por unos ${clp(Math.round(MAE_MODELO / 1000) * 1000)} al mes` : "puede equivocarse";
+  const aviso = `<p class="t-error">Es una estimación: el modelo ${error}. Revisa la publicación original.</p>`;
   const enlace = a.url.startsWith("https://") ? `<a class="t-enlace" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">Ver publicación original →</a>` : "";
   return `
     <div class="insignias">
@@ -206,6 +210,7 @@ function tarjeta(a) {
     <p class="t-precio">${clp(costo(a))}</p>
     <p class="t-sub">costo total mensual: arriendo ${clp(a.p)} + gastos comunes ${clp(a.gc)}</p>
     ${mercado}
+    ${aviso}
     <p class="t-fecha">${pub ? "Publicado " + pub + " (aprox.)" : ""}${pub && vis ? " · " : ""}${vis ? "visto " + vis : ""}</p>
     ${enlace}`;
 }
@@ -274,6 +279,7 @@ const fmtPct = (n, d = 1) => n.toLocaleString("es-CL", { minimumFractionDigits: 
 const fmtN = (n) => Math.round(n).toLocaleString("es-CL");
 
 function llenarExplicacion(m) {
+  MAE_MODELO = m.metricas.mae;
   const base = m.baselines || {};
   const valores = {
     version: m.version, algoritmo: m.algoritmo, n_modelos: m.n_modelos, n_variables: m.n_variables,
@@ -297,7 +303,7 @@ function llenarExplicacion(m) {
 
   const e = m.etiquetas_test;
   $("reparto").textContent = `En los avisos de test, ${fmtPct(e.precio_de_mercado * 100, 0)} quedó como precio de mercado, ` +
-    `${fmtPct(e.oportunidad * 100, 0)} como oportunidad y ${fmtPct(e.caro * 100, 0)} como caro.`;
+    `${fmtPct(e.oportunidad * 100, 0)} como oportunidad y ${fmtPct(e.caro * 100, 0)} sobre el rango de mercado.`;
   $("pie-modelo").textContent = `Cifras del modelo vigente (versión ${m.version}), actualizadas el ` +
     new Date(m.generado).toLocaleDateString("es-CL", { dateStyle: "long" }) + ".";
 }

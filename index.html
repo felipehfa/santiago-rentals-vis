@@ -87,12 +87,12 @@
       </div>
 
       <div class="bloque">
-        <h2>Cuándo es "Oportunidad", "Precio de mercado" o "Caro"</h2>
+        <h2>Cuándo es "Oportunidad", "Precio de mercado" o "Sobre el rango de mercado"</h2>
         <p>Para cada aviso se calcula un <b>z-score robusto</b>: qué tan lejos está su error (costo total real menos costo total predicho) de la
         mediana de error de su estrato, medido en unidades de MAD de ese estrato. Con eso:</p>
         <ul>
           <li><span class="insignia" style="background:#2e7d32">Oportunidad</span> el costo real está bastante más bajo de lo esperado para avisos similares (z menor a −1).</li>
-          <li><span class="insignia" style="background:#c62828">Caro</span> el costo real está bastante más alto de lo esperado (z mayor a 1).</li>
+          <li><span class="insignia" style="background:#c62828">Sobre el rango de mercado</span> el costo real está bastante más alto de lo esperado (z mayor a 1). Es una comparación con avisos parecidos, no un juicio sobre el aviso ni sobre quien lo publica.</li>
           <li><span class="insignia" style="background:#5a6b7d">Precio de mercado</span> el costo real está dentro de lo esperado.</li>
         </ul>
         <p id="reparto"></p>
@@ -182,7 +182,7 @@
   <div id="leyenda">
     <span><i style="background:var(--oportunidad)"></i>Oportunidad</span>
     <span><i style="background:var(--mercado)"></i>Precio de mercado</span>
-    <span><i style="background:var(--caro)"></i>Caro</span>
+    <span><i style="background:var(--caro)"></i>Sobre el rango</span>
   </div>
   <div id="tarjeta" hidden>
     <button id="cerrar" type="button" aria-label="Cerrar">×</button>

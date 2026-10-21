@@ -96,6 +96,7 @@ body.sin-panel #alternar { left: 8px; }
 .t-precio { margin: 10px 0 0; font-size: 22px; font-weight: 700; color: var(--titulo); }
 .t-sub { margin: 0 0 6px; font-size: 12px; }
 .t-mercado { margin: 8px 0; padding: 8px; background: var(--fondo); border-radius: 6px; font-size: 13px; }
+.t-error { margin: 6px 0; font-size: 12px; color: #6b6b6b; }
 .t-fecha { margin: 0; font-size: 12px; color: #9a9a9a; }
 .t-enlace { display: inline-block; margin-top: 8px; color: var(--primario); font-weight: 600; text-decoration: none; }
 .t-enlace:hover { text-decoration: underline; }
