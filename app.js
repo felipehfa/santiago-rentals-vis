@@ -10,10 +10,11 @@ const ETIQUETAS = {
   caro: { texto: "Sobre el rango de mercado", color: "#c62828" },
 };
 // Los valores deben coincidir exactos con los que guarda el scoring (la baja confianza no sigue el orden de las otras dos).
+// Lo que se muestra es la estabilidad de la predicción (acuerdo entre los modelos del ensamble), no un margen de error.
 const CONFIANZAS = {
-  "alta confianza": { texto: "Alta", color: "#2e7d32" },
-  "confianza media": { texto: "Media", color: "#b8860b" },
-  "baja confianza": { texto: "Baja", color: "#8a8a8a" },
+  "alta confianza": { texto: "Estable", color: "#2e7d32" },
+  "confianza media": { texto: "Intermedia", color: "#b8860b" },
+  "baja confianza": { texto: "Inestable", color: "#8a8a8a" },
 };
 const NOMBRE_COMUNA = {
   "santiago": "Santiago", "nunoa": "Ñuñoa", "providencia": "Providencia", "estacion-central": "Estación Central",
@@ -201,7 +202,7 @@ function tarjeta(a) {
   return `
     <div class="insignias">
       <span class="insignia" style="background:${et.color}">${esc(et.texto)}</span>
-      <span class="insignia" style="background:${cf.color}">Confianza ${esc(cf.texto.toLowerCase())}</span>
+      <span class="insignia" style="background:${cf.color}">Predicción ${esc(cf.texto.toLowerCase())}</span>
     </div>
     <p class="t-titulo">${esc(a.t)}</p>
     <p class="t-ubic">${esc(ubic)}</p>
