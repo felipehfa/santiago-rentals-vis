@@ -6,6 +6,26 @@ están en una barra a la izquierda que se puede ocultar. Versión para Santiago 
 
 Repo hermano de `santiago-rentals-elt` (datos) y `santiago-rentals-ml` (modelo). Este repo solo **lee**: nunca escribe en la base.
 
+## Diagrama
+
+Hecho con [Fluyo](https://fluyo.space). Es un `.svg` (la vista estática que se ve aquí) y un `.fluyo.json` en `docs/diagramas/`; ese
+archivo se abre con el botón **Abrir** de fluyo.space para reproducir sus **Historias** (el orden en el tiempo, animado). El script
+que lo genera está en `docs/diagramas/herramientas/` (ver su `LEEME.md`).
+
+![Arquitectura del mapa](docs/diagramas/vis-arquitectura.svg)
+
+Cómo llega un aviso al mapa, en dos recorridos:
+
+- **Arriba, los avisos.** `scripts/exportar.py` lee tres tablas de la base: la predicción vigente de cada aviso
+  (`gold.predicciones_vigentes`), sus datos (`gold.aviso_entrenamiento`) y el enlace a la publicación (la columna `url` de
+  `silver.avisos`). Solo deja los avisos activos y aptos, con costo total de hasta 10 millones, y escribe `data/avisos.json`.
+  GitHub Actions lo hace cada 3 horas y publica el sitio. El navegador carga ese archivo, filtra y dibuja el mapa. Cada visita y cada
+  clic en un enlace se cuentan en GoatCounter, sin cookies ni datos personales.
+- **Abajo, el modelo.** `scripts/exportar_modelo.py` lee las cifras del `@champion` en MLflow y escribe `data/modelo.json`, que
+  alimenta la pestaña "Cómo funciona". Se corre a mano después de promover un modelo nuevo.
+
+Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa* y *Las cifras del modelo llegan a la pestaña*.
+
 ## Qué muestra
 
 - Un punto por aviso **activo y apto** (sin ningún motivo de exclusión en Gold: precio, superficie o conteos sospechosos, sin
@@ -21,13 +41,7 @@ Repo hermano de `santiago-rentals-elt` (datos) y `santiago-rentals-ml` (modelo).
   precisión frente a dos estimaciones ingenuas, estratos de costo, cuándo es oportunidad o caro, qué es la confianza y advertencias.
   Las cifras salen de `data/modelo.json`, no están escritas a mano en la página.
 
-## Cómo funciona
-
-```
-gold.predicciones_vigentes ─┐
-gold.aviso_entrenamiento ───┼─> scripts/exportar.py ─> data/avisos.json ─> index.html + app.js (MapLibre GL)
-silver.avisos (url) ────────┘
-```
+## Piezas
 
 - `scripts/exportar.py` lee las tres tablas y escribe `data/avisos.json` con los campos que usa el mapa. Solo exporta avisos
   con `apto_entrenamiento` (los mismos que usa el entrenamiento) y, por si acaso, con costo total de hasta 10 millones (el tope
