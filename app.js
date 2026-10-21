@@ -21,7 +21,9 @@ const NOMBRE_COMUNA = {
 };
 const comunaTexto = (slug) => NOMBRE_COMUNA[slug.replace(/-metropolitana$/, "")] ?? slug;
 const BUCKETS = ["0", "1", "2", "3", "4+"];
+// En dormitorios, 0 son estudios y monoambientes (el aviso sí informa el dato). En baños, 0 es un dato que el aviso no informó.
 const NOMBRE_BUCKET = { "0": "Sin especificar", "1": "1", "2": "2", "3": "3", "4+": "4+" };
+const NOMBRE_BUCKET_DORM = { ...NOMBRE_BUCKET, "0": "Estudio (0)" };
 
 // Fondo gris claro de Esri en dos capas (base y nombres). Esri usa {z}/{y}/{x}, no {z}/{x}/{y}.
 const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas";
@@ -114,9 +116,9 @@ function construirFiltros() {
   controles.costo.alCambiar = controles.sup.alCambiar = aplicar;
 
   const cd = contar((a) => bucket(a.d)), cb = contar((a) => bucket(a.ba));
-  const buckets = (c) => BUCKETS.filter((b) => b !== "0" || c[b]).map((b) => ({ valor: b, texto: NOMBRE_BUCKET[b] }));
-  controles.dorm = crearChips("f-dorm", buckets(cd), cd);
-  controles.banos = crearChips("f-banos", buckets(cb), cb);
+  const buckets = (c, nombres) => BUCKETS.filter((b) => b !== "0" || c[b]).map((b) => ({ valor: b, texto: nombres[b] }));
+  controles.dorm = crearChips("f-dorm", buckets(cd, NOMBRE_BUCKET_DORM), cd);
+  controles.banos = crearChips("f-banos", buckets(cb, NOMBRE_BUCKET), cb);
 
   const cc = contar((a) => a.c);
   const comunas = Object.keys(cc).sort((a, b) => comunaTexto(a).localeCompare(comunaTexto(b), "es"));

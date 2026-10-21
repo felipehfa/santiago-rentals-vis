@@ -34,7 +34,7 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
 - Al hacer clic: etiqueta y confianza, comuna y barrio, dormitorios, baños, superficie, estacionamiento, amoblado, costo total
   mensual (arriendo más gastos comunes), el **rango de precio de mercado** que estima el modelo, fechas y el **enlace a la
   publicación original**. No se exporta la descripción del aviso.
-- Filtros: costo total, superficie, dormitorios, baños (con la opción "Sin especificar"), comuna, etiqueta, confianza, amoblado
+- Filtros: costo total, superficie, dormitorios, baños (en dormitorios, 0 se muestra como "Estudio (0)": son estudios y monoambientes; en baños, 0 es "Sin especificar"), comuna, etiqueta, confianza, amoblado
   y estacionamiento. El contador de arriba dice cuántos avisos pasan los filtros.
 - Los controles de costo y superficie llegan hasta el percentil 99; al dejarlos al tope no hay límite superior.
 - **Pestaña "Cómo funciona"** (como la de Concepción, con las cifras de este modelo): qué es, datos usados, variables que más pesan,
