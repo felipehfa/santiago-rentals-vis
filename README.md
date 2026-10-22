@@ -1,7 +1,7 @@
 # santiago-rentals-vis
 
 Mapa de los departamentos en arriendo de Santiago, con la etiqueta del modelo (**oportunidad**, **precio de mercado** o
-**sobre el rango de mercado**) y la estabilidad de su predicción (estable, intermedia o inestable). Es HTML y JavaScript sin build ni framework: el mapa ocupa toda la pantalla y los filtros
+**sobre el rango de mercado**). Es HTML y JavaScript sin build ni framework: el mapa ocupa toda la pantalla y los filtros
 están en una barra a la izquierda que se puede ocultar. Versión para Santiago del buscador que se hizo para el Gran Concepción.
 
 Repo hermano de `santiago-rentals-elt` (datos) y `santiago-rentals-ml` (modelo). Este repo solo **lee**: nunca escribe en la base.
@@ -32,14 +32,14 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
 - Un punto por aviso **activo y apto** (sin ningún motivo de exclusión en Gold: precio, superficie o conteos sospechosos, sin
   coordenadas, proyectos, etc.), coloreado por etiqueta (verde oportunidad, gris precio de mercado, rojo sobre el rango de mercado). Los pausados,
   finalizados y eliminados no se muestran.
-- Al hacer clic: etiqueta y estabilidad de la predicción, comuna y barrio, dormitorios, baños, superficie, estacionamiento, amoblado, costo total
+- Al hacer clic: etiqueta, comuna y barrio, dormitorios, baños, superficie, estacionamiento, amoblado, costo total
   mensual (arriendo más gastos comunes), el **rango de precio de mercado** que estima el modelo, fechas y el **enlace a la
   publicación original**. No se exporta la descripción del aviso.
-- Filtros: costo total, superficie, dormitorios, baños (en dormitorios, 0 se muestra como "Estudio (0)": son estudios y monoambientes; en baños, 0 es "Sin especificar"), comuna, etiqueta, estabilidad de la predicción, amoblado
+- Filtros: costo total, superficie, dormitorios, baños (en dormitorios, 0 se muestra como "Estudio (0)": son estudios y monoambientes; en baños, 0 es "Sin especificar"), comuna, etiqueta, amoblado
   y estacionamiento. El contador de arriba dice cuántos avisos pasan los filtros.
 - Los controles de costo y superficie llegan hasta el percentil 99; al dejarlos al tope no hay límite superior.
 - **Pestaña "Cómo funciona"** (como la de Concepción, con las cifras de este modelo): qué es, datos usados, variables que más pesan,
-  precisión frente a tres estimaciones simples (promedio, mediana por comuna y dormitorios, costo por m² de la comuna), estratos de costo, cuándo es oportunidad o está sobre el rango, qué significa que la predicción sea estable o inestable y advertencias.
+  precisión frente a tres estimaciones simples (promedio, mediana por comuna y dormitorios, costo por m² de la comuna), estratos de costo, cuándo es oportunidad o está sobre el rango, cómo se calcula la estimación y advertencias.
   Las cifras salen de `data/modelo.json`, no están escritas a mano en la página.
 - **Privacidad y uso:** las coordenadas son las del aviso público (departamentos en edificios; se probó redondearlas a ~100 m y se
   descartó: apilaba 55 avisos en un punto) y no se exporta la descripción, fotos ni contacto de
@@ -61,7 +61,7 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
 
 `python -m pytest -q` (14 pruebas) revisa sin base de datos ni navegador: el exportador (campos, coordenadas, que la consulta solo
 traiga avisos activos y aptos con enlace `https://` y nunca la descripción ni datos de contacto), los contratos entre `app.js`,
-`index.html` y el scoring (valores de etiqueta y de estabilidad, ids del DOM, cifras de la pestaña "Cómo funciona") y las reglas
+`index.html` y el scoring (valores de etiqueta, ids del DOM, cifras de la pestaña "Cómo funciona") y las reglas
 del vigilante. El workflow `ci` corre además `node --check app.js` y ruff en cada push.
 
 ## Alertas

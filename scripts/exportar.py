@@ -34,7 +34,7 @@ SELECT g.id_aviso, g.url, g.titulo, g.comuna, g.barrio,
        g.latitud, g.longitud, g.dormitorios, g.banos, g.superficie_util_m2, g.superficie_total_m2,
        g.estacionamientos, g.amoblado, g.precio_clp, g.gastos_comunes, g.fecha_publicacion_aprox, g.ultima_vez_visto,
        p.costo_total_publicado_clp, p.costo_total_predicho_clp, p.banda_inferior_clp, p.banda_superior_clp,
-       p.etiqueta, p.nivel_confianza, p.z_robusto
+       p.etiqueta, p.z_robusto
 FROM gold.predicciones_vigentes p
 JOIN gold.aviso_entrenamiento g USING (id_aviso)
 WHERE g.apto_entrenamiento
@@ -63,7 +63,7 @@ def fila(r) -> dict:
         "am": bool(r[12]), "p": num(r[13]), "gc": num(r[14]),
         "pub": r[15].isoformat() if r[15] else None, "vis": r[16].isoformat() if r[16] else None,
         "ct": num(r[17]), "pr": num(r[18]), "bi": num(r[19]), "bs": num(r[20]),
-        "et": r[21], "cf": r[22], "z": num(r[23], 2),
+        "et": r[21], "z": num(r[22], 2),
     }
 
 

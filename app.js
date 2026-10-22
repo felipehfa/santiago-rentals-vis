@@ -9,13 +9,6 @@ const ETIQUETAS = {
   // La clave interna sigue siendo "caro" (así la guarda el scoring); lo que se muestra es descriptivo y medible.
   caro: { texto: "Sobre el rango de mercado", color: "#c62828" },
 };
-// Los valores deben coincidir exactos con los que guarda el scoring (la baja confianza no sigue el orden de las otras dos).
-// Lo que se muestra es la estabilidad de la predicción (acuerdo entre los modelos del ensamble), no un margen de error.
-const CONFIANZAS = {
-  "alta confianza": { texto: "Estable", color: "#2e7d32" },
-  "confianza media": { texto: "Intermedia", color: "#b8860b" },
-  "baja confianza": { texto: "Inestable", color: "#8a8a8a" },
-};
 const NOMBRE_COMUNA = {
   "santiago": "Santiago", "nunoa": "Ñuñoa", "providencia": "Providencia", "estacion-central": "Estación Central",
   "san-miguel": "San Miguel", "independencia": "Independencia", "macul": "Macul", "la-florida": "La Florida",
@@ -136,9 +129,8 @@ function construirFiltros() {
     aplicar();
   }));
 
-  const ce = contar((a) => a.et), cf = contar((a) => a.cf);
+  const ce = contar((a) => a.et);
   controles.etiqueta = crearChips("f-etiqueta", Object.entries(ETIQUETAS).map(([valor, e]) => ({ valor, texto: e.texto })), ce, "et-");
-  controles.confianza = crearChips("f-confianza", Object.entries(CONFIANZAS).map(([valor, c]) => ({ valor, texto: c.texto })), cf);
 
   $("f-amoblado").addEventListener("change", aplicar);
   $("f-estac").addEventListener("change", aplicar);
@@ -147,7 +139,7 @@ function construirFiltros() {
 
 function reiniciar() {
   controles.costo.reiniciar(); controles.sup.reiniciar();
-  for (const k of ["dorm", "banos", "comuna", "etiqueta", "confianza"]) {
+  for (const k of ["dorm", "banos", "comuna", "etiqueta"]) {
     controles[k].marcados = new Set(controles[k].todos);
     controles[k].contenedor.querySelectorAll("input").forEach((i) => { i.checked = true; });
   }
@@ -162,7 +154,7 @@ function pasa(a) {
   if (a.su == null ? !controles.sup.completo() : !controles.sup.admite(a.su)) return false;
   if (!controles.dorm.marcados.has(bucket(a.d)) || !controles.banos.marcados.has(bucket(a.ba))) return false;
   if (!controles.comuna.marcados.has(a.c)) return false;
-  if (!controles.etiqueta.marcados.has(a.et) || !controles.confianza.marcados.has(a.cf)) return false;
+  if (!controles.etiqueta.marcados.has(a.et)) return false;
   if ($("f-amoblado").checked && !a.am) return false;
   if ($("f-estac").checked && !(a.e > 0)) return false;
   return true;
@@ -190,7 +182,6 @@ function hace(iso) {
 
 function tarjeta(a) {
   const et = ETIQUETAS[a.et] || { texto: a.et, color: "#888" };
-  const cf = CONFIANZAS[a.cf] || { texto: a.cf, color: "#888" };
   const ubic = a.b ? `${comunaTexto(a.c)} · ${a.b}` : comunaTexto(a.c);
   const sup = a.su != null ? `${Math.round(a.su)} m² útiles` + (a.st != null && Math.abs(a.st - a.su) > 1 ? ` (${Math.round(a.st)} totales)` : "") : "superficie no informada";
   const pub = hace(a.pub), vis = hace(a.vis);
@@ -202,7 +193,6 @@ function tarjeta(a) {
   return `
     <div class="insignias">
       <span class="insignia" style="background:${et.color}">${esc(et.texto)}</span>
-      <span class="insignia" style="background:${cf.color}">Predicción ${esc(cf.texto.toLowerCase())}</span>
     </div>
     <p class="t-titulo">${esc(a.t)}</p>
     <p class="t-ubic">${esc(ubic)}</p>

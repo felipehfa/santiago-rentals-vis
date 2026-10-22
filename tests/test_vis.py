@@ -17,12 +17,12 @@ INDEX = (RAIZ / "index.html").read_text(encoding="utf-8")
 # Orden de las columnas de SQL_AVISOS
 FILA = ("MLC-1", "https://www.portalinmobiliario.com/MLC-1", "Depto", "Santiago", "Barrio", -33.4512345678, -70.6543219876,
         0, 1, 35.04, None, 0, False, 250000, 0, date(2026, 8, 1), datetime(2026, 10, 21, 12, 0),
-        250000, 392000.4, 357669, 427148, "oportunidad", "confianza media", -1.2345)
+        250000, 392000.4, 357669, 427148, "oportunidad", -1.2345)
 
 
 def test_fila_redondea_coordenadas_y_mapea_los_campos():
     f = exportar.fila(FILA)
-    assert f["id"] == "MLC-1" and f["et"] == "oportunidad" and f["cf"] == "confianza media"
+    assert f["id"] == "MLC-1" and f["et"] == "oportunidad"
     assert f["lat"] == -33.45123 and f["lon"] == -70.65432          # 5 decimales: ~1 m
     assert f["su"] == 35.0 and f["st"] is None and f["z"] == -1.23
     assert f["pr"] == 392000 and f["am"] is False
@@ -51,9 +51,9 @@ def test_el_tope_de_costo_coincide_con_el_del_entrenamiento():
     assert exportar.COSTO_TOTAL_MAX_CLP == 10_000_000
 
 
-def test_etiquetas_y_estabilidad_coinciden_con_los_valores_del_scoring():
+def test_etiquetas_coinciden_con_los_valores_del_scoring():
     """Si el scoring cambia estos textos, el mapa dejaría de pintar las insignias."""
-    for valor in ("oportunidad", "precio_de_mercado", "caro", "alta confianza", "confianza media", "baja confianza"):
+    for valor in ("oportunidad", "precio_de_mercado", "caro"):
         assert valor in APP
 
 

@@ -101,18 +101,10 @@
       </div>
 
       <div class="bloque">
-        <h2>Qué significa que la predicción sea estable o inestable</h2>
+        <h2>Cómo se calcula la estimación</h2>
         <p>El modelo es un <b>ensamble de <span data-m="n_modelos"></span> modelos</b> entrenados con distintas semillas aleatorias sobre los
-        mismos datos. La estabilidad mide <b>qué tan de acuerdo están entre sí</b> para un aviso en particular. Se reparte en tres
-        grupos del mismo tamaño, así que es una comparación entre avisos, no un margen de error:</p>
-        <ul>
-          <li><span class="insignia" style="background:#2e7d32">Predicción estable</span> los modelos predicen costos muy parecidos.</li>
-          <li><span class="insignia" style="background:#b8860b">Predicción intermedia</span> hay algo de desacuerdo.</li>
-          <li><span class="insignia" style="background:#8a8a8a">Predicción inestable</span> los modelos discrepan más: el aviso tiene una combinación
-          de características poco común en los datos de entrenamiento, así que su predicción es menos firme.</li>
-        </ul>
-        <p>Una predicción estable <b>no garantiza que sea correcta</b>: solo dice que los modelos son consistentes entre sí. El error real
-        se ve en la tabla de precisión y en el margen de error de cada tarjeta.</p>
+        mismos datos; la estimación de cada aviso es el promedio de sus predicciones. El error real del modelo se ve en la tabla de
+        precisión y en el margen de error de cada tarjeta.</p>
       </div>
 
       <div class="bloque aviso">
@@ -123,7 +115,7 @@
           <li>El modelo <b>no considera todo</b> lo que afecta el costo real de un arriendo: estado interno, luminosidad, ruido, terminaciones,
           vista, estado del edificio, condiciones del contrato, urgencia del arrendador y otras cosas que no están en los datos.</li>
           <li>Los datos vienen de avisos publicados: pueden tener errores de tipeo, precios o gastos comunes desactualizados, o información incompleta.</li>
-          <li>El error típico del modelo significa que <b>puede fallar</b>, incluso en avisos con predicción estable.</li>
+          <li>El error típico del modelo significa que <b>puede fallar</b>, incluso en avisos que parecen coherentes.</li>
           <li>Revisa siempre la publicación original antes de sacar conclusiones sobre un aviso.</li>
         </ul>
       </div>
@@ -163,7 +155,6 @@
         <div class="lista" id="f-comuna"></div>
       </section>
       <section><h2>Etiqueta del modelo</h2><div class="chips" id="f-etiqueta"></div></section>
-      <section><h2>Estabilidad de la predicción</h2><div class="chips" id="f-confianza"></div></section>
       <section>
         <h2>Más filtros</h2>
         <label class="check"><input type="checkbox" id="f-amoblado"> Amoblado</label>
