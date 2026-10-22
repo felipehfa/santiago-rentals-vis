@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Qué puede cargar la página: solo este sitio, MapLibre (unpkg), el fondo del mapa (OpenFreeMap) y el contador
+       (GoatCounter). Los estilos en línea quedan permitidos porque las insignias y barras los usan. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com https://gc.zgo.at; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org https://santiago-rentals.goatcounter.com; connect-src 'self' https://tiles.openfreemap.org https://santiago-rentals.goatcounter.com; worker-src blob:; child-src blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <title>Arriendos Santiago</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%276%27 fill=%27%232968c8%27/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+        integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V" crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -184,7 +188,9 @@
 
   <!-- Contador de visitas sin cookies (GoatCounter): https://santiago-rentals.goatcounter.com -->
   <script data-goatcounter="https://santiago-rentals.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <!-- integrity: si unpkg sirviera otro archivo para esta versión, el navegador no lo ejecuta -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"
+          integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj" crossorigin="anonymous"></script>
   <script src="app.js"></script>
 </body>
 </html>

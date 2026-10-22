@@ -16,6 +16,7 @@ Uso:
 """
 import json
 import os
+import re
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -28,6 +29,19 @@ CARPETA = RAIZ / "data"
 DECIMALES_COORDENADAS = 5   # ~1 m; solo se recortan los dígitos de más
 # El mismo tope del entrenamiento (santiago-rentals-ml/config.yaml); sobre eso son errores de precio.
 COSTO_TOTAL_MAX_CLP = 10_000_000
+
+# Algunos avisos ponen un teléfono o un correo en el título. El mapa es público y no publica datos de contacto: se tapan.
+RE_TELEFONO = re.compile(r"(?<!\d)(?:\+?\s?56[\s.-]?)?9(?:[\s.-]?\d){8}(?!\d)"
+                         r"|(?<!\d)\d{2}[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)")
+RE_CORREO = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+
+
+def sin_contacto(texto):
+    """Reemplaza teléfonos y correos del texto por "[contacto oculto]"."""
+    if not texto:
+        return texto
+    return RE_CORREO.sub("[contacto oculto]", RE_TELEFONO.sub("[contacto oculto]", texto))
+
 
 SQL_AVISOS = """
 SELECT g.id_aviso, g.url, g.titulo, g.comuna, g.barrio,
@@ -57,7 +71,7 @@ def num(x, dec=0):
 
 def fila(r) -> dict:
     return {
-        "id": r[0], "url": r[1], "t": r[2], "c": r[3], "b": r[4],
+        "id": r[0], "url": r[1], "t": sin_contacto(r[2]), "c": r[3], "b": r[4],
         "lat": num(r[5], DECIMALES_COORDENADAS), "lon": num(r[6], DECIMALES_COORDENADAS),
         "d": num(r[7]), "ba": num(r[8]), "su": num(r[9], 1), "st": num(r[10], 1), "e": num(r[11]),
         "am": bool(r[12]), "p": num(r[13]), "gc": num(r[14]),

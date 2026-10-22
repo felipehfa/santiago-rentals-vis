@@ -59,16 +59,22 @@ Historias: *Publicación del mapa con avisos nuevos*, *Un visitante abre el mapa
 
 ## Pruebas y CI
 
-`python -m pytest -q` (14 pruebas) revisa sin base de datos ni navegador: el exportador (campos, coordenadas, que la consulta solo
+`python -m pytest -q` (16 pruebas) revisa sin base de datos ni navegador: el exportador (campos, coordenadas, que la consulta solo
 traiga avisos activos y aptos con enlace `https://` y nunca la descripción ni datos de contacto), los contratos entre `app.js`,
 `index.html` y el scoring (valores de etiqueta, ids del DOM, cifras de la pestaña "Cómo funciona") y las reglas
 del vigilante. El workflow `ci` corre además `node --check app.js` y ruff en cada push.
 
+**Seguridad de la página.** MapLibre se carga con `integrity` (si unpkg sirviera otro archivo para esa versión, el navegador no lo
+ejecuta) y la página declara una política de contenido (CSP) que solo deja cargar este sitio, MapLibre, OpenFreeMap y
+GoatCounter. Los títulos se publican sin teléfonos ni correos (`sin_contacto` en el exportador). Las Actions están fijadas por
+commit y Dependabot las mantiene al día; los workflows tienen permisos mínimos.
+
 ## Alertas
 
 El workflow `vigilante` corre cada hora en GitHub (aunque el notebook del ELT esté apagado) y deja la ejecución en rojo, con
-correo de GitHub, si Gold lleva más de 3 horas sin reconstruirse (orquestador caído o notebook apagado) o si más del 5 % de las
-predicciones quedó atrasado respecto de las visitas (scoring caído). Para no mandar un correo por hora, solo avisa al cruzar 3, 12
+correo de GitHub, si Gold lleva más de 3 horas sin reconstruirse (orquestador caído o notebook apagado), si más del 5 % de las
+predicciones quedó atrasado respecto de las visitas (scoring caído) o si más del 5 % de Gold quedó sin precio aunque se visitó su
+detalle (el portal sirviendo páginas incompletas; esta revisión es cada 6 horas). Para no mandar un correo por hora, solo avisa al cruzar 3, 12
 y 24 horas de atraso y luego cada día. Para recibirlos hay que tener activadas las notificaciones de Actions en
 Settings > Notifications del perfil de GitHub. Usa el mismo secret `BD_STRING_VIS`.
 

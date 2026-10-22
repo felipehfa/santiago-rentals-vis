@@ -83,3 +83,17 @@ def test_avisos_json_tiene_la_forma_esperada():
     claves = set(exportar.fila(FILA))
     for a in doc["avisos"][:200]:
         assert set(a) == claves and a["url"].startswith("https://")
+
+
+def test_el_titulo_no_publica_telefonos_ni_correos():
+    assert exportar.sin_contacto("Depto 2D llamar +56 9 8765 4321 o dueno@mail.cl") == \
+        "Depto 2D llamar [contacto oculto] o [contacto oculto]"
+    assert exportar.sin_contacto("Arriendo 987654321 Ñuñoa") == "Arriendo [contacto oculto] Ñuñoa"
+    assert exportar.sin_contacto("Fono 22 345 6789") == "Fono [contacto oculto]"
+    # Los cuatro casos reales del 22-oct
+    assert exportar.sin_contacto("Oportunidad +569 63937095  Nov") == "Oportunidad [contacto oculto]  Nov"
+    assert exportar.sin_contacto("Metro Ecuador +56963937095") == "Metro Ecuador [contacto oculto]"
+    assert exportar.sin_contacto("Balmaceda 2170 N° 963937095") == "Balmaceda 2170 N° [contacto oculto]"
+    # Números del aviso que no son teléfonos quedan igual
+    assert exportar.sin_contacto("Depto 55 m2, piso 12, $450.000") == "Depto 55 m2, piso 12, $450.000"
+    assert exportar.sin_contacto(None) is None
