@@ -109,3 +109,7 @@ y `clic-publicacion-original`. En local (`localhost`) no cuenta. La pesta√±a "C√
 ## Pendiente
 
 - Agrupar puntos (clusters) si el mapa se satura al alejar el zoom.
+
+## Licencia
+
+[MIT](LICENSE).
