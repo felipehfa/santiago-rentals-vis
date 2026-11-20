@@ -1,5 +1,12 @@
 # santiago-rentals-vis
 
+> **⏸ Proyecto en pausa desde el 20-nov-2026.** La base de Supabase dejó de aceptar conexiones el 20-nov a las 02:49
+> (hora de Chile) y se detuvo todo el pipeline: el scraping, el scoring y la publicación están detenidos.
+> Los workflows programados quedaron desactivados: `entrenar`, `scoring` y `vigilante` en `santiago-rentals-ml`, y
+> `publicar` y `vigilante` en `santiago-rentals-vis`. El mapa sigue en línea con los datos del 20-nov a las 02:49.
+> Para reanudar: comprobar que la base acepta conexiones, reactivar esos workflows (`gh workflow enable`) y reanudar el orquestador
+> del repo ELT.
+
 Mapa de los departamentos en arriendo de Santiago, con la etiqueta del modelo (**oportunidad**, **precio de mercado** o
 **sobre el rango de mercado**). Es HTML y JavaScript sin build ni framework: el mapa ocupa toda la pantalla y los filtros
 están en una barra a la izquierda que se puede ocultar. Versión para Santiago del buscador que se hizo para el Gran Concepción.
